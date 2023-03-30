@@ -78,10 +78,11 @@ class UDV:
         plt.gcf().set_size_inches([16,4])
 
         plt.contourf(time, depth, data, levels, cmap='viridis')
+        plt.title("Raw Data")
         plt.xlim(xlimits)
         cb = plt.colorbar()
         cb.set_ticks([data.min(), data.min()+((data.max()-data.min())/2), data.max()])
-        plt.ylabel('Raw')
+        plt.ylabel('Depth (mm)')
         plt.xlabel("Time (s)")
         plt.tight_layout()
 
@@ -93,10 +94,11 @@ class UDV:
         plt.gcf().set_size_inches([16,4])
 
         plt.contourf(time, depth, data, levels, cmap='viridis')
+        plt.title("Filtered Data")
         plt.xlim(xlimits)
         cb = plt.colorbar()
         cb.set_ticks([data.min(), data.min()+((data.max()-data.min())/2), data.max()])
-        plt.ylabel('Filtered')
+        plt.ylabel('Depth (mm)')
         plt.xlabel("Time (s)")
         plt.tight_layout()
 
