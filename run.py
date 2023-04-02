@@ -3,5 +3,5 @@ import tkinter as tk
 
 if __name__ == "__main__":
     root = tk.Tk()
-    my_gui = UDV_GUI(root)
-    root.mainloop()
+    app = UDV_GUI(root)
+    app.run()
