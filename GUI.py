@@ -41,11 +41,6 @@ class UDV_GUI:
         self.start_depth_entry = tk.Entry(master)
         self.start_depth_entry.grid(row=5, column=1, pady=5)
 
-        #self.depth_line_label = tk.Label(master, text="Depth Line (mm):")
-        #self.depth_line_label.grid(row=6, column=0, sticky='w', pady=5)
-        #self.depth_line_entry = tk.Entry(master)
-        #self.depth_line_entry.grid(row=6, column=1, pady=5)
-
         # set up save widgets
         self.save_plot_button = tk.Button(master, text="Save Plot", state=tk.DISABLED, command=self.save_plot)
         self.save_plot_button.grid(row=7, column=0, pady=5)
@@ -57,7 +52,6 @@ class UDV_GUI:
         self.threshold_entry.insert(tk.END, "70.0")
         self.start_depth_entry.insert(tk.END, "50.0")
         self.time_limits_entry.insert(tk.END, "0, 20")
-        #self.depth_line_entry.insert(tk.END, "150.0")
 
         # set up button widgets
         self.process_button = tk.Button(master, text="Process Data", state=tk.NORMAL, command=self.process_data)
@@ -128,18 +122,9 @@ class UDV_GUI:
         try:
             print("Processing data...")
             obj = UDV()
-            #print("Object created")
-            fig_raw = obj.plot_raw_UDV(time, depth, raw_data, xlimits=(time_limit[0], time_limit[1]), levels=300)
-            #print("Raw fig created")
+            fig_raw = obj.plot_data("Raw", 1, time, depth, raw_data, xlimits=(time_limit[0], time_limit[1]), levels=300)
             corrected_data = obj.remove_outliers(time, depth, raw_data, start_id_depth=s, threshold=thr, interpolation_method=self.interpolation_var.get())
-            #print(corrected_data.shape)
-            #print("Outlier removed")
-            fig_filtered = obj.plot_filtered_UDV(time, depth, corrected_data, xlimits=(time_limit[0], time_limit[1]), levels=300)
-            #print("Filt plotted")
-            #fig_line = obj.plot_lineplot(time, depth, raw_data, corrected_data, xlimits=(time_limit[0], time_limit[1]), depthLine = depth_line)
-            #print("Line plotted")
-            #fig_average = obj.plot_averageVz(depth, corrected_data, start_id_depth=s)
-            #print("Data processed successfully.")
+            fig_filtered = obj.plot_data("Filtered", 2, time, depth, corrected_data, xlimits=(time_limit[0], time_limit[1]), levels=300)
         except:
             messagebox.showerror("Error", "Unable to process data.")
             return
@@ -149,10 +134,7 @@ class UDV_GUI:
         self.fig_filtered = fig_filtered
         self.fig_raw.show()
         self.fig_filtered.show()
-        #self.fig_line = fig_line
-        #self.fig_line.show()
-        #self.fig_average = fig_average
-        #self.fig_average.show()
+
         self.time = time
         self.depth = depth
         self.corrected_data = corrected_data
@@ -189,32 +171,6 @@ class UDV_GUI:
         else:
             messagebox.showerror("Error", "No plot available to save.")
 
-        if self.fig_line:
-            # open file dialog to select directory and file name for saving
-            filetypes = [("PNG Files", "*.png")]
-            filepath = filedialog.asksaveasfilename(filetypes=filetypes, defaultextension=".png")
-
-            if filepath:
-                # save plots to specified file path
-                if self.fig_line:
-                    self.fig_line.savefig(filepath[:-4] + ".png", dpi=300, bbox_inches='tight')
-                messagebox.showinfo("Save", "Plot files saved successfully.")
-        else:
-            messagebox.showerror("Error", "No plot available to save.")
-
-        if self.fig_average:
-            # open file dialog to select directory and file name for saving
-            filetypes = [("PNG Files", "*.png")]
-            filepath = filedialog.asksaveasfilename(filetypes=filetypes, defaultextension=".png")
-
-            if filepath:
-                # save plots to specified file path
-                if self.fig_average:
-                    self.fig_average.savefig(filepath[:-4] + ".png", dpi=300, bbox_inches='tight')
-                messagebox.showinfo("Save", "Plot files saved successfully.")
-        else:
-            messagebox.showerror("Error", "No plot available to save.")
-
     def save_data(self):
         if hasattr(self, 'obj'):
             # open file dialog to select directory and file name for saving data
@@ -243,10 +199,33 @@ class UDV_GUI:
         self.time_limits_entry.insert(tk.END, "(0, 20)")
         self.start_depth_entry.delete(0, tk.END)
         self.start_depth_entry.insert(tk.END, "50")
-        #self.depth_line_entry.delete(0, tk.END)
-        #self.depth_line_entry.insert(tk.END, "150")
         self.save_plot_button.config(state=tk.DISABLED)
         self.save_data_button.config(state=tk.DISABLED)
         self.fig_raw = None
         self.fig = None
         self.obj = None
+    
+    def close_gui(self):
+        self.master.destroy()
+        self.master = None
+        self.master.quit()
+    
+    def run(self):
+        self.master.mainloop()
+    
+    def quit(self):
+        self.master.quit()
+    
+    def destroy(self):
+        self.master.destroy()
+    
+    def __del__(self):
+        self.master.quit()
+        self.master.destroy()
+    
+    def __exit__(self):
+        self.master.quit()
+        self.master.destroy()
+    
+    def __enter__(self):
+        return self
